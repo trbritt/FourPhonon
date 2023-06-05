@@ -1,4 +1,4 @@
-export FFLAGS=-Ofast -I /usr/local/include  -I${MKLROOT}/include/intel64/ilp64 -i8  -I"${MKLROOT}/include"
+export FFLAGS=-Ofast -vms -I /usr/local/include  -I${MKLROOT}/include/intel64/ilp64 -i8  -I"${MKLROOT}/include"
 export LDFLAGS=-L/usr/local/lib -lsymspg
 export MPIFC=mpiifort -check bounds -g -traceback
 
