@@ -1550,6 +1550,7 @@ contains
     N_minusminus_reduce=0
 
     do mm=myid+1,Nbands*Nlist,numprocs
+      if (myid.eq.0) call progress_bar(mm-myid+1,Nbands*Nlist)
       if (energy(List(int((mm-1)/Nbands)+1),modulo(mm-1,Nbands)+1).le.omega_max) then
          call NP_plusplus(mm,energy,velocity,Nlist,List,IJK,N_plusplus_reduce(mm),Pspace_plusplus_reduce(mm))
          call NP_plusminus(mm,energy,velocity,Nlist,List,IJK,N_plusminus_reduce(mm),Pspace_plusminus_reduce(mm))
@@ -2027,4 +2028,17 @@ contains
     rate_scatt_4ph=rate_scatt_plusplus+rate_scatt_plusminus+rate_scatt_minusminus
   end subroutine RTA_driver_4ph
 
+  subroutine progress_bar(j, maximum)
+     implicit none
+      integer(kind=4)::j,k,maximum,n
+      character(len=57)::bar="???% |                                                  |"
+      write(unit=bar(1:3),fmt="(i3)") 100*j/maximum
+      n = FLOOR(50*real(j)/real(maximum))
+      do k=1, n
+         bar(6+k:6+k)="*"
+      enddo
+      ! print the progress bar.
+      write(unit=6,fmt="(a1,a1,a57)") '+',char(13), bar
+      return
+  end subroutine progress_bar
 end module processes
