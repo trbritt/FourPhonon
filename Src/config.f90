@@ -87,6 +87,7 @@ contains
     natoms=0
     ngrid=0
     norientations=0
+    open (unit=6, carriagecontrol='fortran')
     open(1,file="CONTROL",status="old")
     read(1,nml=allocations)
     if(norientations.lt.0) then
