@@ -1239,7 +1239,8 @@ contains
     integer(kind=4),intent(in) :: Index_j(Ntri)
     integer(kind=4),intent(in) :: Index_k(Ntri)
     real(kind=8),intent(out) :: rate_scatt(Nbands,Nlist),rate_scatt_plus(Nbands,Nlist),rate_scatt_minus(Nbands,Nlist)
-    real(kind=8),intent(out) :: rate_scatt_plus_N(Nbands,Nlist),rate_scatt_minus_N(Nbands,Nlist),rate_scatt_plus_U(Nbands,Nlist),rate_scatt_minus_U(Nbands,Nlist)
+    real(kind=8),intent(out) :: rate_scatt_plus_N(Nbands,Nlist),rate_scatt_minus_N(Nbands,Nlist),&
+                                rate_scatt_plus_U(Nbands,Nlist),rate_scatt_minus_U(Nbands,Nlist)
     real(kind=8),intent(out) :: WP3_plus(Nbands,Nlist)
     real(kind=8),intent(out) :: WP3_minus(Nbands,Nlist)
 
@@ -1912,7 +1913,8 @@ contains
 
   ! Wrapper around 4ph RTA subroutines with 3ph subroutines that splits the work among processors.
   subroutine RTA_driver_4ph(energy,velocity,eigenvect,Nlist,List,IJK,&
-       Ntri,Phi,R_j,R_k,R_l,Index_i,Index_j,Index_k,Index_l,rate_scatt_4ph,rate_scatt_plusplus,rate_scatt_plusminus,rate_scatt_minusminus,&
+       Ntri,Phi,R_j,R_k,R_l,Index_i,Index_j,Index_k,Index_l,rate_scatt_4ph,rate_scatt_plusplus,&
+       rate_scatt_plusminus,rate_scatt_minusminus,&
        WP4_plusplus,WP4_plusminus,WP4_minusminus,&
        rate_scatt_plusplus_N,rate_scatt_plusminus_N,rate_scatt_minusminus_N,&
        rate_scatt_plusplus_U,rate_scatt_plusminus_U,rate_scatt_minusminus_U)
@@ -1936,19 +1938,26 @@ contains
     integer(kind=4),intent(in) :: Index_k(Ntri)
     integer(kind=4),intent(in) :: Index_l(Ntri)
     real(kind=8),intent(out) :: rate_scatt_4ph(Nbands,Nlist)
-    real(kind=8),intent(out) :: rate_scatt_plusplus(Nbands,Nlist),rate_scatt_plusminus(Nbands,Nlist),rate_scatt_minusminus(Nbands,Nlist)
-    real(kind=8),intent(out) :: rate_scatt_plusplus_N(Nbands,Nlist),rate_scatt_plusminus_N(Nbands,Nlist),rate_scatt_minusminus_N(Nbands,Nlist)
-    real(kind=8),intent(out) :: rate_scatt_plusplus_U(Nbands,Nlist),rate_scatt_plusminus_U(Nbands,Nlist),rate_scatt_minusminus_U(Nbands,Nlist)
+    real(kind=8),intent(out) :: rate_scatt_plusplus(Nbands,Nlist),rate_scatt_plusminus(Nbands,Nlist),&
+                                rate_scatt_minusminus(Nbands,Nlist)
+    real(kind=8),intent(out) :: rate_scatt_plusplus_N(Nbands,Nlist),rate_scatt_plusminus_N(Nbands,Nlist),&
+                                rate_scatt_minusminus_N(Nbands,Nlist)
+    real(kind=8),intent(out) :: rate_scatt_plusplus_U(Nbands,Nlist),rate_scatt_plusminus_U(Nbands,Nlist),&
+                                rate_scatt_minusminus_U(Nbands,Nlist)
     real(kind=8),intent(out) :: WP4_plusplus(Nbands,Nlist),WP4_plusminus(Nbands,Nlist),WP4_minusminus(Nbands,Nlist)
 
     integer(kind=4) :: i
     integer(kind=4) :: ll
     integer(kind=4) :: mm
     real(kind=8) :: Gamma_plusplus,Gamma_plusminus,Gamma_minusminus
-    real(kind=8) :: Gamma_plusplus_N,Gamma_plusminus_N,Gamma_minusminus_N,Gamma_plusplus_U,Gamma_plusminus_U,Gamma_minusminus_U
-    real(kind=8) :: rate_scatt_plusplus_reduce(Nbands,Nlist),rate_scatt_plusminus_reduce(Nbands,Nlist),rate_scatt_minusminus_reduce(Nbands,Nlist)
-    real(kind=8) :: rate_scatt_plusplus_reduce_N(Nbands,Nlist),rate_scatt_plusminus_reduce_N(Nbands,Nlist),rate_scatt_minusminus_reduce_N(Nbands,Nlist)
-    real(kind=8) :: rate_scatt_plusplus_reduce_U(Nbands,Nlist),rate_scatt_plusminus_reduce_U(Nbands,Nlist),rate_scatt_minusminus_reduce_U(Nbands,Nlist) 
+    real(kind=8) :: Gamma_plusplus_N,Gamma_plusminus_N,Gamma_minusminus_N,Gamma_plusplus_U,Gamma_plusminus_U,&
+                    Gamma_minusminus_U
+    real(kind=8) :: rate_scatt_plusplus_reduce(Nbands,Nlist),rate_scatt_plusminus_reduce(Nbands,Nlist),&
+                    rate_scatt_minusminus_reduce(Nbands,Nlist)
+    real(kind=8) :: rate_scatt_plusplus_reduce_N(Nbands,Nlist),rate_scatt_plusminus_reduce_N(Nbands,Nlist),&
+                    rate_scatt_minusminus_reduce_N(Nbands,Nlist)
+    real(kind=8) :: rate_scatt_plusplus_reduce_U(Nbands,Nlist),rate_scatt_plusminus_reduce_U(Nbands,Nlist),&
+                    rate_scatt_minusminus_reduce_U(Nbands,Nlist) 
     real(kind=8) :: WP4_plusplus_reduce(Nbands*Nlist),WP4_plusminus_reduce(Nbands*Nlist),WP4_minusminus_reduce(Nbands*Nlist)
 
     rate_scatt_4ph=0.d00

@@ -87,7 +87,6 @@ contains
     natoms=0
     ngrid=0
     norientations=0
-    open (unit=6, carriagecontrol='fortran')
     open(1,file="CONTROL",status="old")
     read(1,nml=allocations)
     if(norientations.lt.0) then
@@ -183,12 +182,12 @@ contains
     four_phonon=.false.
     four_phonon_iteration=.false.
     read(1,nml=flags)
-    if(four_phonon_iteration.and.convergence.eq. .false.) then
+    if(four_phonon_iteration.and.(convergence.eqv. .false.)) then
       if(myid.eq.0)write(error_unit,*) "Error: four_phonon_iteration=.TRUE. but convergence=.FALSE."
       call MPI_BARRIER(MPI_COMM_WORLD,ierr)
       call MPI_FINALIZE(ierr)
     end if
-    if(four_phonon_iteration.and.four_phonon.eq. .false.) then
+    if(four_phonon_iteration.and.(four_phonon.eqv. .false.)) then
       if(myid.eq.0)write(error_unit,*) "Error: four_phonon_iteration=.TRUE. but four_phonon=.FALSE."
       call MPI_BARRIER(MPI_COMM_WORLD,ierr)
       call MPI_FINALIZE(ierr)
@@ -456,7 +455,8 @@ contains
 
    !  base_sigma=sqrt(base_sigma/6.)
 
-    base_sigma=DMAX1((dot_product(rlattvec(:,1),v)/ngrid(1))**2,(dot_product(rlattvec(:,2),v)/ngrid(2))**2,(dot_product(rlattvec(:,3),v)/ngrid(3))**2)
+    base_sigma=DMAX1((dot_product(rlattvec(:,1),v)/ngrid(1))**2,(dot_product(rlattvec(:,2),v)/ngrid(2))**2,&
+                     (dot_product(rlattvec(:,3),v)/ngrid(3))**2)
     base_sigma=sqrt(base_sigma/2.)
 
   end function base_sigma

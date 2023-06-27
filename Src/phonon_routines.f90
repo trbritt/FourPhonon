@@ -479,7 +479,6 @@ contains
     wscell(1,1:3)=cell_r(1,1:3)*scell(1)
     wscell(2,1:3)=cell_r(2,1:3)*scell(2)
     wscell(3,1:3)=cell_r(3,1:3)*scell(3)
-
     j=1
     do m1=-2,2
        do m2=-2,2
@@ -650,6 +649,7 @@ contains
     ! group velocities are extracted exactly like in the previous
     ! subroutine.
     do ik=1,nk
+      ! write(6,*) "Espresso sees", dyn_s(ik,:,:), dyn_g(ik,:,:),"for id=", myid, "ik=", ik, "before ZHEEV"
        dyn(:,:)=dyn_s(ik,:,:)+dyn_g(ik,:,:)
        ddyn(:,:,:)=ddyn_s(ik,:,:,:)+ddyn_g(ik,:,:,:)
        do ipol=1,3
@@ -664,7 +664,6 @@ contains
              end do
           end do
        end do
-
        call zheev("V","U",nbands,dyn(:,:),nbands,omega2,work,-1,rwork,i)
        if(real(work(1)).gt.nwork) then
           nwork=nint(2*real(work(1)))

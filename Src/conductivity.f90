@@ -34,7 +34,8 @@ contains
 
   ! Straightforward implementation of the thermal conductivity as an integral
   ! over the whole Brillouin zone in terms of frequencies, velocities and F_n.
-  subroutine TConduct(omega,velocity,velocity_offdiag,F_n,Nlist,Nequi,ALLEquiList,ThConductivity,ThConductivityMode,ThConductivityCoh,ThConductivityCohMode,rate)
+  subroutine TConduct(omega,velocity,velocity_offdiag,F_n,Nlist,Nequi,ALLEquiList,ThConductivity,ThConductivityMode,&
+                      ThConductivityCoh,ThConductivityCohMode,rate)
     implicit none
 
     integer(kind=4),intent(in) :: Nlist,Nequi(nptk),ALLEquiList(Nsymm_rot,nptk)
@@ -62,7 +63,7 @@ contains
           end if
        end do
     end do
-    print *, "RATE avg. over q-point:", sum(rate,dim=2)/nptk
+    if(myid.eq.0)write(*,*) "RATE avg. over q-point:", sum(rate,dim=2)/nptk
 
     ! Calculate thermal conductivity
     do jj=1,Nbands
@@ -85,11 +86,14 @@ contains
              fBE1=1.d0/(exp(hbar*omega(ii,jj)/Kb/T)-1.D0)
              fBE2=1.d0/(exp(hbar*omega(ii,kk)/Kb/T)-1.D0)
              ThConductivityCohMode(ii,jj,kk,:,:)=(fBE1*(fBE1+1)*omega(ii,jj)+fBE2*(fBE2+1)*omega(ii,kk))*tmp_coh
-             ThConductivityCohMode(ii,jj,kk,:,:)=ThConductivityCohMode(ii,jj,kk,:,:)*(omega(ii,jj)+omega(ii,kk))/2*(rate(jj,ii)+rate(kk,ii))
-             ThConductivityCohMode(ii,jj,kk,:,:)=ThConductivityCohMode(ii,jj,kk,:,:)/(4*(omega(ii,jj)-omega(ii,kk))**2+(rate(jj,ii)+rate(kk,ii))**2)
+             ThConductivityCohMode(ii,jj,kk,:,:)=ThConductivityCohMode(ii,jj,kk,:,:)*&
+                                                 (omega(ii,jj)+omega(ii,kk))/2*(rate(jj,ii)+rate(kk,ii))
+             ThConductivityCohMode(ii,jj,kk,:,:)=ThConductivityCohMode(ii,jj,kk,:,:)/&
+                                                 (4*(omega(ii,jj)-omega(ii,kk))**2+(rate(jj,ii)+rate(kk,ii))**2)
              ThConductivityCoh(jj,kk,:,:)=ThConductivityCoh(jj,kk,:,:)+ThConductivityCohMode(ii,jj,kk,:,:)
              if (maxval(ThConductivityCohMode(ii,jj,kk,:,:)).gt.10**5) then
-                print *,ii,jj,kk,ThConductivityCohMode(ii,jj,kk,1,1),ThConductivityCohMode(ii,jj,kk,2,2), abs(omega(ii,jj)-omega(ii,kk)), rate(jj,ii)+rate(kk,ii)
+                if(myid.eq.0)write(*,*) ii,jj,kk,ThConductivityCohMode(ii,jj,kk,1,1),ThConductivityCohMode(ii,jj,kk,2,2), &
+                                        abs(omega(ii,jj)-omega(ii,kk)), rate(jj,ii)+rate(kk,ii)
              end if
              ThConductivityCohMode(ii,kk,jj,:,:)=ThConductivityCohMode(ii,jj,kk,:,:)
              ThConductivityCoh(kk,jj,:,:)=ThConductivityCoh(jj,kk,:,:)
@@ -136,7 +140,8 @@ contains
   subroutine CumulativeTConduct(omega,rate,velocity,velocity_offdiag,F_n,ticks,results,results_coh)
     implicit none
 
-    real(kind=8),intent(in) :: omega(nptk,Nbands),rate(Nbands,nptk),velocity(nptk,Nbands,3),velocity_offdiag(nptk,Nbands,Nbands,3),F_n(Nbands,nptk,3)
+    real(kind=8),intent(in) :: omega(nptk,Nbands),rate(Nbands,nptk),velocity(nptk,Nbands,3),&
+                               velocity_offdiag(nptk,Nbands,Nbands,3),F_n(Nbands,nptk,3)
     real(kind=8),intent(out) :: ticks(nticks),results(Nbands,3,3,Nticks),results_coh(Nbands,3,3,Nticks)
 
     real(kind=8) :: fBE,fBE1,fBE2,tmp(3,3),tmp_coh(3,3),lambda,lambda_coh
@@ -201,7 +206,8 @@ contains
   subroutine CumulativeTConductOmega(omega,rate,velocity,velocity_offdiag,F_n,ticks,results,results_coh)
     implicit none
 
-    real(kind=8),intent(in) :: omega(nptk,Nbands),rate(Nbands,nptk),velocity(nptk,Nbands,3),velocity_offdiag(nptk,Nbands,Nbands,3),F_n(Nbands,nptk,3)
+    real(kind=8),intent(in) :: omega(nptk,Nbands),rate(Nbands,nptk),velocity(nptk,Nbands,3),&
+                               velocity_offdiag(nptk,Nbands,Nbands,3),F_n(Nbands,nptk,3)
     real(kind=8),intent(out) :: ticks(nticks),results(Nbands,3,3,Nticks),results_coh(Nbands,3,3,Nticks)
 
     real(kind=8) :: fBE,fBE1,fBE2,tmp(3,3),tmp_coh(3,3),lambda,lambda_coh

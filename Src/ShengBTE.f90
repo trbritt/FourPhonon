@@ -728,7 +728,7 @@ program ShengBTE
              rate_scatt_plus,rate_scatt_minus,Pspace_plus_total,Pspace_minus_total)
         ! Will add four-phonon iteration capabilities when we publish
         ! tag four_phonon_iteration is reserved here
-        if (four_phonon.and.four_phonon_iteration.eq. .false.) then
+        if (four_phonon.and.four_phonon_iteration.eqv. .false.) then
           call RTA_driver_4ph(energy,velocity,eigenvect,Nlist,List,IJK,&
                 Ntri_4fc,Psi,R_s,R_t,R_u,Index_r,Index_s,Index_t,Index_u,rate_scatt_4ph,&
                 rate_scatt_plusplus,rate_scatt_plusminus,rate_scatt_minusminus,&
@@ -776,7 +776,7 @@ program ShengBTE
             end do
             close(1)
             if (four_phonon) then
-              if (four_phonon_iteration.eq. .false.) then
+              if (four_phonon_iteration.eqv. .false.) then
                 write(*,*) "Info: four_phonon_iteration=.false., using RTA on 4ph calculations"
               end if
               open(1,file="BTE.WP4_plusplus",status="replace")
@@ -843,7 +843,7 @@ program ShengBTE
               close(2)
               close(3)
               close(4)
-              if (four_phonon_iteration.eq. .false.) then
+              if (four_phonon_iteration.eqv. .false.) then
                 write(*,*) "Info: Output four-phonon N/U scattering rates"
                 open(5,file="BTE.w_4ph_normal",status="replace")
                 open(6,file="BTE.w_4ph_Umklapp",status="replace")
@@ -931,8 +931,10 @@ program ShengBTE
                   write(1,"(6E20.10)") energy(list(ll),i),rate_scatt(i,ll)
                   write(2,"(6E20.10)") energy(list(ll),i),rate_scatt_plus(i,ll)
                   write(3,"(6E20.10)") energy(list(ll),i),rate_scatt_minus(i,ll)
-                  write(4,"(4E20.10)") energy(list(ll),i),rate_scatt_plus_N(i,ll),rate_scatt_minus_N(i,ll),rate_scatt_plus_N(i,ll)+rate_scatt_minus_N(i,ll)
-                  write(5,"(4E20.10)") energy(list(ll),i),rate_scatt_plus_U(i,ll),rate_scatt_minus_U(i,ll),rate_scatt_plus_U(i,ll)+rate_scatt_minus_U(i,ll)
+                  write(4,"(4E20.10)") energy(list(ll),i),rate_scatt_plus_N(i,ll),rate_scatt_minus_N(i,ll),&
+                                       rate_scatt_plus_N(i,ll)+rate_scatt_minus_N(i,ll)
+                  write(5,"(4E20.10)") energy(list(ll),i),rate_scatt_plus_U(i,ll),rate_scatt_minus_U(i,ll),&
+                                       rate_scatt_plus_U(i,ll)+rate_scatt_minus_U(i,ll)
               end do
             end do
             close(1)
@@ -1011,7 +1013,8 @@ program ShengBTE
         open(2008,file="BTE.kappa_total_tensor",status="replace")
         open(2009,file="BTE.kappa_total_scalar",status="replace")
 
-        call TConduct(energy,velocity,velocity_offdiag,F_n,Nlist,Nequi,ALLEquiList,ThConductivity,ThConductivityMode,ThConductivityCoh,ThConductivityCohMode,rate)
+        call TConduct(energy,velocity,velocity_offdiag,F_n,Nlist,Nequi,ALLEquiList,ThConductivity,&
+                      ThConductivityMode,ThConductivityCoh,ThConductivityCohMode,rate)
         do ll=1,nbands
            call symmetrize_tensor(ThConductivity(ll,:,:))
            ! The Wigner coherence term: Simoncelli, Marzari, & Mauri. Nature Physics 15:809-813 (2019)
@@ -1032,7 +1035,8 @@ program ShengBTE
         write(2007,"(I9,"//trim(adjustl(aux))//"E20.10)") 0,ThConductivity+sum(ThConductivityCoh,dim=1)
         write(2008,"(I9,9E20.10,E20.10)") 0,sum(ThConductivity+sum(ThConductivityCoh,dim=1),dim=1)
         write(2009,"(I9,E20.10,E20.10)") 0,&
-             sum(sum(ThConductivity+sum(ThConductivityCoh,dim=1),dim=1),reshape((/((i==j,i=1,3),j=1,3)/),(/3,3/)))/3.
+             sum(sum(ThConductivity+sum(ThConductivityCoh,dim=1),dim=1),&
+                 reshape((/((i==j,i=1,3),j=1,3)/),(/3,3/)))/3.
         write(303,"(F7.1,9E14.5)") T,sum(ThConductivity,dim=1)
         write(503,"(F7.1,9E14.5)") T,sum(sum(ThConductivityCoh,dim=1),dim=1)
         write(703,"(F7.1,9E14.5)") T,sum(ThConductivity+sum(ThConductivityCoh,dim=1),dim=1)
@@ -1055,7 +1059,8 @@ program ShengBTE
                  F_n(:,ll,:)=transpose(matmul(symmetrizers(:,:,ll),transpose(F_n(:,ll,:))))
               end do
 
-              call TConduct(energy,velocity,velocity_offdiag,F_n,Nlist,Nequi,ALLEquiList,ThConductivity,ThConductivityMode,ThConductivityCoh,ThConductivityCohMode,rate)
+              call TConduct(energy,velocity,velocity_offdiag,F_n,Nlist,Nequi,ALLEquiList,ThConductivity,&
+                            ThConductivityMode,ThConductivityCoh,ThConductivityCohMode,rate)
               do ll=1,nbands
                  call symmetrize_tensor(ThConductivity(ll,:,:))
                  ! The Wigner coherence term: Simoncelli, Marzari, & Mauri. Nature Physics 15:809-813 (2019)
