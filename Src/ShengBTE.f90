@@ -424,6 +424,7 @@ program ShengBTE
   if (four_phonon) then
       call read4fc(Ntri_4fc,Psi,R_s,R_t,R_u,Index_r,Index_s,Index_t,Index_u)
   end if
+  if(myid.eq.0)write(*,*) "Info: Start calculating 3ph allowed processes"
 
   call NP_driver(energy,velocity,Nlist,List,IJK,&
        N_plus,Pspace_plus_total,N_minus,Pspace_minus_total)
