@@ -415,7 +415,15 @@ program ShengBTE
   ! Phase space volume per mode and their sum.
   allocate(Pspace_plus_total(Nbands,Nlist))
   allocate(Pspace_minus_total(Nbands,Nlist))
+  if(myid.eq.0)write(*,*) "Info: Allocating and reading anharmonic force constants"
 
+  ! Load the 3rd-IFCs from FORCE_CONSTANTS_3RD.
+  call read3fc(Ntri,Phi,R_j,R_k,Index_i,Index_j,Index_k)
+
+  ! Load the 4th-IFCs from FORCE_CONSTANTS_4TH.
+  if (four_phonon) then
+      call read4fc(Ntri_4fc,Psi,R_s,R_t,R_u,Index_r,Index_s,Index_t,Index_u)
+  end if
 
   call NP_driver(energy,velocity,Nlist,List,IJK,&
        N_plus,Pspace_plus_total,N_minus,Pspace_minus_total)
@@ -624,14 +632,6 @@ program ShengBTE
      write(*,*) "Info: onlyharmonic=.true., stopping here"
      call MPI_FINALIZE(ierr)
      stop
-  end if
-
-  ! Load the 3rd-IFCs from FORCE_CONSTANTS_3RD.
-  call read3fc(Ntri,Phi,R_j,R_k,Index_i,Index_j,Index_k)
-
-  ! Load the 4th-IFCs from FORCE_CONSTANTS_4TH.
-  if (four_phonon) then
-      call read4fc(Ntri_4fc,Psi,R_s,R_t,R_u,Index_r,Index_s,Index_t,Index_u)
   end if
 
   call mode_grun(energy,eigenvect,Ntri,Phi,R_j,R_k,&
