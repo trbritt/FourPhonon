@@ -721,6 +721,7 @@ program ShengBTE
         call change_directory(trim(adjustl(path))//C_NULL_CHAR)
      end if
      if(convergence) then
+        if (myid.eq.0) print*, "Info: start calculating iterative 3ph phase space"
         call Ind_driver(energy,velocity,eigenvect,Nlist,List,IJK,N_plus,N_minus,&
              Ntri,Phi,R_j,R_k,Index_i,Index_j,Index_k,&
              Indof2ndPhonon_plus,Indof3rdPhonon_plus,Gamma_plus,&
@@ -729,6 +730,7 @@ program ShengBTE
         ! Will add four-phonon iteration capabilities when we publish
         ! tag four_phonon_iteration is reserved here
         if (four_phonon.and.four_phonon_iteration.eqv. .false.) then
+          if (myid.eq.0) print*, "Info: start calculating RTA 4ph phase space"
           call RTA_driver_4ph(energy,velocity,eigenvect,Nlist,List,IJK,&
                 Ntri_4fc,Psi,R_s,R_t,R_u,Index_r,Index_s,Index_t,Index_u,rate_scatt_4ph,&
                 rate_scatt_plusplus,rate_scatt_plusminus,rate_scatt_minusminus,&
@@ -737,11 +739,13 @@ program ShengBTE
                 rate_scatt_plusplus_U,rate_scatt_plusminus_U,rate_scatt_minusminus_U)
         end if
      else
+        if (myid.eq.0) print*, "Info: start calculating RTA 3ph phase space"
         call RTA_driver(energy,velocity,eigenvect,Nlist,List,IJK,&
              Ntri,Phi,R_j,R_k,Index_i,Index_j,Index_k,rate_scatt,rate_scatt_plus,&
              rate_scatt_minus,Pspace_plus_total,Pspace_minus_total,&
              rate_scatt_plus_N,rate_scatt_minus_N,rate_scatt_plus_U,rate_scatt_minus_U)
         if (four_phonon) then
+          if (myid.eq.0) print*, "Info: start calculating RTA 4ph phase space"
           call RTA_driver_4ph(energy,velocity,eigenvect,Nlist,List,IJK,&
               Ntri_4fc,Psi,R_s,R_t,R_u,Index_r,Index_s,Index_t,Index_u,rate_scatt_4ph,&
               rate_scatt_plusplus,rate_scatt_plusminus,rate_scatt_minusminus,&
