@@ -722,6 +722,7 @@ contains
     WP3_minus_reduce=0.d0
 
     do mm=myid+1,Nbands*NList,numprocs
+       if (myid.eq.0) call progress_bar(mm-myid+1,Nbands*Nlist)
        i=modulo(mm-1,Nbands)+1
        ll=int((mm-1)/Nbands)+1
        if(N_plus(mm).ne.0) then
@@ -1982,6 +1983,7 @@ contains
     WP4_minusminus_reduce=0.d00
 
     do mm=myid+1,Nbands*NList,numprocs
+       if (myid.eq.0) call progress_bar(mm-myid+1,Nbands*Nlist)
        i=modulo(mm-1,Nbands)+1
        ll=int((mm-1)/Nbands)+1
        if (energy(List(ll),i).le.omega_max) then
