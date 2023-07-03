@@ -425,116 +425,118 @@ program ShengBTE
       call read4fc(Ntri_4fc,Psi,R_s,R_t,R_u,Index_r,Index_s,Index_t,Index_u)
   end if
   if(myid.eq.0)write(*,*) "Info: Start calculating 3ph allowed processes"
+  if (counting) then
+   call NP_driver(energy,velocity,Nlist,List,IJK,&
+         N_plus,Pspace_plus_total,N_minus,Pspace_minus_total)
 
-  call NP_driver(energy,velocity,Nlist,List,IJK,&
-       N_plus,Pspace_plus_total,N_minus,Pspace_minus_total)
+   Ntotal_plus=sum(N_plus)
+   Ntotal_minus=sum(N_minus)
+   
+   if(myid.eq.0)write(*,*) "Info: Ntotal_plus =",Ntotal_plus
+   if(myid.eq.0)write(*,*) "Info: Ntotal_minus =",Ntotal_minus
+   if (four_phonon) then
+      if(myid.eq.0.and.four_phonon)write(*,*) "Info: Start calculating 4ph allowed processes"
+      call NP_driver_4ph(energy,velocity,Nlist,List,IJK,&
+            N_plusplus,Pspace_plusplus_total,N_plusminus,&
+            Pspace_plusminus_total,N_minusminus,Pspace_minusminus_total)
+      Ntotal_plusplus=sum(N_plusplus)
+      Ntotal_plusminus=sum(N_plusminus)
+      Ntotal_minusminus=sum(N_minusminus)
+   end if
+   if(myid.eq.0.and.four_phonon) write(*,*) "Info: Ntotal_plusplus,Ntotal_plusminus,Ntotal_minusminus="
+   if(myid.eq.0.and.four_phonon) write(*,"(1X,I0,1X,I0,1X,I0)") Ntotal_plusplus,Ntotal_plusminus,Ntotal_minusminus
+   if(myid.eq.0.and.four_phonon) then
+      open(1,file="BTE.Numprocess_4ph",status="replace")
+      do i=1,Nbands
+         do ll=1,Nlist
+            write(1,"(1X,I0,1X,I0,1X,I0)") N_plusplus(ll+Nlist*(i-1)),N_plusminus(ll+Nlist*(i-1)),N_minusminus(ll+Nlist*(i-1))
+         end do
+      end do
+      close(1)
+   end if
+   
+   if(myid.eq.0) then
+      open(1,file="BTE.P3_plus",status="replace")
+      do ll=1,Nlist
+         write(1,"("//trim(adjustl(aux))//"E20.10)") Pspace_plus_total(:,ll)
+      end do
+      close(1)
+      open(1,file="BTE.P3_minus",status="replace")
+      do ll=1,Nlist
+         write(1,"("//trim(adjustl(aux))//"E20.10)") Pspace_minus_total(:,ll)
+      end do
+      close(1)
+      open(1,file="BTE.P3",status="replace")
+      do ll=1,Nlist
+         write(1,"("//trim(adjustl(aux))//"E20.10)") 2.*(Pspace_plus_total(:,ll)+&
+               Pspace_minus_total(:,ll)/2.)/3.
+      end do
+      close(1)
+      do ii=1,Nlist
+         Pspace_plus_total(:,ii)=Pspace_plus_total(:,ii)*Nequi(ii)
+      end do
+      open(1,file="BTE.P3_plus_total",status="replace")
+      write(1,*) sum(Pspace_plus_total)
+      close(1)
+      do ii=1,Nlist
+         Pspace_minus_total(:,ii)=Pspace_minus_total(:,ii)*Nequi(ii)
+      end do
+      open(1,file="BTE.P3_minus_total",status="replace")
+      write(1,*) sum(Pspace_minus_total)
+      close(1)
+      open(1,file="BTE.P3_total",status="replace")
+      write(1,*) 2.*(sum(Pspace_plus_total)+sum(Pspace_minus_total)/2.)/3.
+      close(1)
+      if (four_phonon) then
+         open(1,file="BTE.P4_plusplus",status="replace")
+         do ll=1,Nlist
+               write(1,"("//trim(adjustl(aux))//"E20.10)") Pspace_plusplus_total(:,ll)
+         end do
+         close(1)
+         open(1,file="BTE.P4_plusmius",status="replace")
+         do ll=1,Nlist
+               write(1,"("//trim(adjustl(aux))//"E20.10)") Pspace_plusminus_total(:,ll)
+         end do
+         close(1)
+         open(1,file="BTE.P4_minusminus",status="replace")
+         do ll=1,Nlist
+               write(1,"("//trim(adjustl(aux))//"E20.10)") Pspace_minusminus_total(:,ll)
+         end do
+         close(1)
+         open(1,file="BTE.P4",status="replace")
+         do ll=1,Nlist
+               write(1,"("//trim(adjustl(aux))//"E20.10)") 6.*(Pspace_plusplus_total(:,ll)+&
+                  Pspace_plusminus_total(:,ll)+Pspace_minusminus_total(:,ll))/7.
+         end do
+         close(1)
+         do ii=1,Nlist
+               Pspace_plusplus_total(:,ii)=Pspace_plusplus_total(:,ii)*Nequi(ii)
+         end do
+         open(1,file="BTE.P4_plusplus_total",status="replace")
+         write(1,*) sum(Pspace_plusplus_total)
+         close(1)
+         do ii=1,Nlist
+            Pspace_plusminus_total(:,ii)=Pspace_plusminus_total(:,ii)*Nequi(ii)
+         end do
+         open(1,file="BTE.P4_plusminus_total",status="replace")
+         write(1,*) sum(Pspace_plusminus_total)
+         close(1)
+         do ii=1,Nlist
+               Pspace_minusminus_total(:,ii)=Pspace_minusminus_total(:,ii)*Nequi(ii)
+         end do
+         open(1,file="BTE.P4_minusminus_total",status="replace")
+         write(1,*) sum(Pspace_minusminus_total)
+         close(1)
+         open(1,file="BTE.P4_total",status="replace")
+         write(1,*) 6.*(sum(Pspace_plusplus_total)+sum(Pspace_plusminus_total)+&
+                     sum(Pspace_minusminus_total))/7.
+         close(1)
+      end if
+   end if
+  endif !counting
 
-  Ntotal_plus=sum(N_plus)
-  Ntotal_minus=sum(N_minus)
-  
-  if(myid.eq.0)write(*,*) "Info: Ntotal_plus =",Ntotal_plus
-  if(myid.eq.0)write(*,*) "Info: Ntotal_minus =",Ntotal_minus
-  if (four_phonon) then
-    if(myid.eq.0.and.four_phonon)write(*,*) "Info: Start calculating 4ph allowed processes"
-    call NP_driver_4ph(energy,velocity,Nlist,List,IJK,&
-         N_plusplus,Pspace_plusplus_total,N_plusminus,&
-         Pspace_plusminus_total,N_minusminus,Pspace_minusminus_total)
-    Ntotal_plusplus=sum(N_plusplus)
-    Ntotal_plusminus=sum(N_plusminus)
-    Ntotal_minusminus=sum(N_minusminus)
-  end if
-  if(myid.eq.0.and.four_phonon) write(*,*) "Info: Ntotal_plusplus,Ntotal_plusminus,Ntotal_minusminus="
-  if(myid.eq.0.and.four_phonon) write(*,"(1X,I0,1X,I0,1X,I0)") Ntotal_plusplus,Ntotal_plusminus,Ntotal_minusminus
-  if(myid.eq.0.and.four_phonon) then
-    open(1,file="BTE.Numprocess_4ph",status="replace")
-    do i=1,Nbands
-       do ll=1,Nlist
-          write(1,"(1X,I0,1X,I0,1X,I0)") N_plusplus(ll+Nlist*(i-1)),N_plusminus(ll+Nlist*(i-1)),N_minusminus(ll+Nlist*(i-1))
-       end do
-    end do
-    close(1)
-  end if
-  
-  if(myid.eq.0) then
-     open(1,file="BTE.P3_plus",status="replace")
-     do ll=1,Nlist
-        write(1,"("//trim(adjustl(aux))//"E20.10)") Pspace_plus_total(:,ll)
-     end do
-     close(1)
-     open(1,file="BTE.P3_minus",status="replace")
-     do ll=1,Nlist
-        write(1,"("//trim(adjustl(aux))//"E20.10)") Pspace_minus_total(:,ll)
-     end do
-     close(1)
-     open(1,file="BTE.P3",status="replace")
-     do ll=1,Nlist
-        write(1,"("//trim(adjustl(aux))//"E20.10)") 2.*(Pspace_plus_total(:,ll)+&
-             Pspace_minus_total(:,ll)/2.)/3.
-     end do
-     close(1)
-     do ii=1,Nlist
-        Pspace_plus_total(:,ii)=Pspace_plus_total(:,ii)*Nequi(ii)
-     end do
-     open(1,file="BTE.P3_plus_total",status="replace")
-     write(1,*) sum(Pspace_plus_total)
-     close(1)
-     do ii=1,Nlist
-        Pspace_minus_total(:,ii)=Pspace_minus_total(:,ii)*Nequi(ii)
-     end do
-     open(1,file="BTE.P3_minus_total",status="replace")
-     write(1,*) sum(Pspace_minus_total)
-     close(1)
-     open(1,file="BTE.P3_total",status="replace")
-     write(1,*) 2.*(sum(Pspace_plus_total)+sum(Pspace_minus_total)/2.)/3.
-     close(1)
-     if (four_phonon) then
-        open(1,file="BTE.P4_plusplus",status="replace")
-        do ll=1,Nlist
-            write(1,"("//trim(adjustl(aux))//"E20.10)") Pspace_plusplus_total(:,ll)
-        end do
-        close(1)
-        open(1,file="BTE.P4_plusmius",status="replace")
-        do ll=1,Nlist
-            write(1,"("//trim(adjustl(aux))//"E20.10)") Pspace_plusminus_total(:,ll)
-        end do
-        close(1)
-        open(1,file="BTE.P4_minusminus",status="replace")
-        do ll=1,Nlist
-            write(1,"("//trim(adjustl(aux))//"E20.10)") Pspace_minusminus_total(:,ll)
-        end do
-        close(1)
-        open(1,file="BTE.P4",status="replace")
-        do ll=1,Nlist
-            write(1,"("//trim(adjustl(aux))//"E20.10)") 6.*(Pspace_plusplus_total(:,ll)+&
-                Pspace_plusminus_total(:,ll)+Pspace_minusminus_total(:,ll))/7.
-        end do
-        close(1)
-        do ii=1,Nlist
-            Pspace_plusplus_total(:,ii)=Pspace_plusplus_total(:,ii)*Nequi(ii)
-        end do
-        open(1,file="BTE.P4_plusplus_total",status="replace")
-        write(1,*) sum(Pspace_plusplus_total)
-        close(1)
-        do ii=1,Nlist
-          Pspace_plusminus_total(:,ii)=Pspace_plusminus_total(:,ii)*Nequi(ii)
-        end do
-        open(1,file="BTE.P4_plusminus_total",status="replace")
-        write(1,*) sum(Pspace_plusminus_total)
-        close(1)
-        do ii=1,Nlist
-            Pspace_minusminus_total(:,ii)=Pspace_minusminus_total(:,ii)*Nequi(ii)
-        end do
-        open(1,file="BTE.P4_minusminus_total",status="replace")
-        write(1,*) sum(Pspace_minusminus_total)
-        close(1)
-        open(1,file="BTE.P4_total",status="replace")
-        write(1,*) 6.*(sum(Pspace_plusplus_total)+sum(Pspace_plusminus_total)+&
-                    sum(Pspace_minusminus_total))/7.
-        close(1)
-     end if
-  end if
 
-  if(onlyharmonic) then
+  if(onlyharmonic) then !we check that counting must be true if onlyharmonic=.true. at config time
       ! weighted phase space (WP3/WP4) is calculated here if onlyharmonic=.true., 
       ! otherwise WP3/WP4 will be calculated later together with BTE.w_anharmonic(BTE.w_3ph/4ph)
       if (myid.eq.0) print*, "Info: start calculating weighted phase space"

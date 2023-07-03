@@ -47,9 +47,9 @@ module config
   namelist /parameters/ T,scalebroad,rmin,rmax,dr,maxiter,nticks,eps,&
            T_min,T_max,T_step,omega_max,Length
   logical :: nonanalytic,convergence,isotopes,autoisotopes,nanowires,onlyharmonic,espresso,normal,umklapp,&
-             four_phonon,four_phonon_iteration,nanolength
+             four_phonon,four_phonon_iteration,nanolength, counting
   namelist /flags/ nonanalytic,convergence,isotopes,autoisotopes,&
-       nanowires,onlyharmonic,espresso,normal,umklapp,four_phonon,four_phonon_iteration,nanolength
+       nanowires,onlyharmonic,espresso,normal,umklapp,four_phonon,four_phonon_iteration,nanolength, counting
 
   integer(kind=4) :: nbands,nptk,nwires
   real(kind=8) :: cgrid,V,rV,rlattvec(3,3),slattvec(3,3)
@@ -177,7 +177,7 @@ contains
     nanowires=.false.
     onlyharmonic=.false.
     espresso=.false.
-    
+    counting=.false.
     ! Four-phonon namelist
     four_phonon=.false.
     four_phonon_iteration=.false.
@@ -189,6 +189,11 @@ contains
     end if
     if(four_phonon_iteration.and.(four_phonon.eqv. .false.)) then
       if(myid.eq.0)write(error_unit,*) "Error: four_phonon_iteration=.TRUE. but four_phonon=.FALSE."
+      call MPI_BARRIER(MPI_COMM_WORLD,ierr)
+      call MPI_FINALIZE(ierr)
+    end if
+    if(onlyharmonic.and.(counting.eqv. .false.)) then
+      if(myid.eq.0)write(error_unit,*) "Error: counting=.FALSE., but onlyharmonic=.TRUE." ! if you want RTA, you need counting
       call MPI_BARRIER(MPI_COMM_WORLD,ierr)
       call MPI_FINALIZE(ierr)
     end if
