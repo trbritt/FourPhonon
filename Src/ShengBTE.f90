@@ -533,6 +533,8 @@ program ShengBTE
          close(1)
       end if
    end if
+  else
+   if (myid.eq.0) print*, "Info: skipped counting for RTA calculations"
   endif !counting
 
 
