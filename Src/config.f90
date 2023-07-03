@@ -177,7 +177,7 @@ contains
     nanowires=.false.
     onlyharmonic=.false.
     espresso=.false.
-    counting=.false.
+    counting=.true.
     ! Four-phonon namelist
     four_phonon=.false.
     four_phonon_iteration=.false.
