@@ -1055,7 +1055,8 @@ program ShengBTE
         ! Iterate to convergence if desired.
         if(convergence) then
            do ii=1,maxiter
-              kappa_old=sum(ThConductivity,dim=1)
+            write(*,fmt="(A,i3, A)") "Info: converging kappa, at", 100*ii/maxiter, "%"
+            kappa_old=sum(ThConductivity,dim=1)
             ! will add four_phonon_iteration when we publish
             call iteration(Nlist,Nequi,ALLEquiList,TypeofSymmetry,N_plus,N_minus,&
                     Ntotal_plus,Ntotal_minus,Indof2ndPhonon_plus,Indof3rdPhonon_plus,&
