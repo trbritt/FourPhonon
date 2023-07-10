@@ -431,9 +431,17 @@ program ShengBTE
 
    Ntotal_plus=sum(N_plus)
    Ntotal_minus=sum(N_minus)
-   
-   if(myid.eq.0)write(*,*) "Info: Ntotal_plus =",Ntotal_plus
-   if(myid.eq.0)write(*,*) "Info: Ntotal_minus =",Ntotal_minus
+   if(myid.eq.0) then
+      write(*,*) "Info: Ntotal_plus =",Ntotal_plus
+      write(*,*) "Info: Ntotal_minus =",Ntotal_minus
+      open(1,file="BTE.Numprocess_3ph",status="replace")
+      do i=1,Nbands
+         do ll=1,Nlist
+            write(1,"(1X,I0,1X,I0,1X,I0)") N_plus(ll+Nlist*(i-1)),N_minus(ll+Nlist*(i-1))
+         end do
+      end do
+      close(1)
+   end if
    if (four_phonon) then
       if(myid.eq.0.and.four_phonon)write(*,*) "Info: Start calculating 4ph allowed processes"
       call NP_driver_4ph(energy,velocity,Nlist,List,IJK,&
@@ -533,8 +541,40 @@ program ShengBTE
          close(1)
       end if
    end if
-  else
-   if (myid.eq.0) print*, "Info: skipped counting for RTA calculations"
+  else !counting
+   if (myid.eq.0) then 
+      write(*,*) "Info: skipped counting. Reading number of allowed processes from disk"
+      open(1,file="BTE.Numprocess_3ph",status="old")
+      do i=1,Nbands
+         do ll=1,Nlist
+            read(1,*) N_plus(ll+Nlist*(i-1)),N_minus(ll+Nlist*(i-1))
+         end do
+      end do
+      close(1)
+      Ntotal_plus=sum(N_plus)
+      Ntotal_minus=sum(N_minus)
+      write(*,*) "Info: Ntotal_plus =",Ntotal_plus
+      write(*,*) "Info: Ntotal_minus =",Ntotal_minus
+      call MPI_BCAST(Ntotal_plus, 1, MPI_INTEGER, 0, MPI_COMM_WORLD, ierr)
+      call MPI_BCAST(Ntotal_minus, 1, MPI_INTEGER, 0, MPI_COMM_WORLD, ierr)
+      if (four_phonon) then 
+         open(1,file="BTE.Numprocess_4ph",status="old")
+         do i=1,Nbands
+            do ll=1,Nlist
+               read(1,*) N_plusplus(ll+Nlist*(i-1)),N_plusminus(ll+Nlist*(i-1)),N_minusminus(ll+Nlist*(i-1))
+            end do
+         end do
+         close(1)
+         Ntotal_plusplus=sum(N_plusplus)
+         Ntotal_plusminus=sum(N_plusminus)
+         Ntotal_minusminus=sum(N_minusminus)
+         write(*,*) "Info: Ntotal_plusplus,Ntotal_plusminus,Ntotal_minusminus="
+         write(*,"(1X,I0,1X,I0,1X,I0)") Ntotal_plusplus,Ntotal_plusminus,Ntotal_minusminus
+         call MPI_BCAST(Ntotal_plusplus, 1, MPI_INTEGER8, 0, MPI_COMM_WORLD, ierr)
+         call MPI_BCAST(Ntotal_plusminus, 1, MPI_INTEGER8, 0, MPI_COMM_WORLD, ierr)
+         call MPI_BCAST(Ntotal_minusminus, 1, MPI_INTEGER8, 0, MPI_COMM_WORLD, ierr)
+      endif !four phonon
+   end if !myid
   endif !counting
 
 
