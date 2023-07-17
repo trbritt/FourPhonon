@@ -551,12 +551,12 @@ program ShengBTE
          end do
       end do
       close(1)
+      call MPI_BCAST(N_plus, Nbands*Nlist, MPI_INTEGER, 0, MPI_COMM_WORLD, ierr)
+      call MPI_BCAST(N_minus, Nbands*Nlist, MPI_INTEGER, 0, MPI_COMM_WORLD, ierr)
       Ntotal_plus=sum(N_plus)
       Ntotal_minus=sum(N_minus)
       write(*,*) "Info: Ntotal_plus =",Ntotal_plus
       write(*,*) "Info: Ntotal_minus =",Ntotal_minus
-      call MPI_BCAST(Ntotal_plus, 1, MPI_INTEGER, 0, MPI_COMM_WORLD, ierr)
-      call MPI_BCAST(Ntotal_minus, 1, MPI_INTEGER, 0, MPI_COMM_WORLD, ierr)
       if (four_phonon) then 
          open(1,file="BTE.Numprocess_4ph",status="old")
          do i=1,Nbands
@@ -577,7 +577,7 @@ program ShengBTE
    end if !myid
   endif !counting
 
-   print(*,*) "Rank", myid, "sees Ntotal_plus=", Ntotal_plus, "and Ntotal_minus=", Ntotal_minus
+  write(*,*) "Rank", myid, "sees Ntotal_plus=", Ntotal_plus, "and Ntotal_minus=", Ntotal_minus
   if(onlyharmonic) then !we check that counting must be true if onlyharmonic=.true. at config time
       ! weighted phase space (WP3/WP4) is calculated here if onlyharmonic=.true., 
       ! otherwise WP3/WP4 will be calculated later together with BTE.w_anharmonic(BTE.w_3ph/4ph)
