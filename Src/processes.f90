@@ -1617,8 +1617,13 @@ contains
     q=IJK(:,list(ll))
     realq=matmul(rlattvec,q/dble(ngrid))
     omega=energy(list(ll),i)
-    if (myid.eq.0) write(*,*) "Driving ++ ..."
     if (omega.ne.0) then
+      if (myid.eq.0) write(*,*) "Driving ++ ..."
+      !$OMP PARALLEL DEFAULT(SHARED) PRIVATE(ii, jj, ss, qprime, realqprime, qdprime, realqdprime, qtprime, &
+      !$OMP& realqtprime, j, k, l, omegap, omegadp, omegatp, sigma, fBEprime, fBEdprime, fBEtprime, WP4, Vp, &
+      !$OMP& shortest_q, shortest_qprime, shortest_qdprime, shortest_qtprime &
+      !$OMP& )
+      !$OMP DO
       do ii=1,nptk
          if (myid.eq.0) write(*, fmt="(I0, A, I0, A)", advance='no') ii, "/", nptk, " "
          do jj=ii,nptk
@@ -1678,6 +1683,8 @@ contains
             end do
          end do
       end do
+      !$OMP END DO
+      !$OMP END PARALLEL
       WP4_plusplus=WP4_plusplus/nptk/nptk
     end if
     ! converting to THz
@@ -1728,8 +1735,13 @@ contains
     q=IJK(:,list(ll))
     realq=matmul(rlattvec,q/dble(ngrid))
     omega=energy(list(ll),i)
-    if (myid.eq.0) write(*,*) "Driving ++ ..."
-    if (omega.ne.0) then
+    if (omega.ne.0) then    
+      if (myid.eq.0) write(*,*) "Driving +- ..."
+      !$OMP PARALLEL DEFAULT(SHARED) PRIVATE(ii, jj, ss, qprime, realqprime, qdprime, realqdprime, qtprime, &
+      !$OMP& realqtprime, j, k, l, omegap, omegadp, omegatp, sigma, fBEprime, fBEdprime, fBEtprime, WP4, Vp, &
+      !$OMP& shortest_q, shortest_qprime, shortest_qdprime, shortest_qtprime &
+      !$OMP& )
+      !$OMP DO
       do ii=1,nptk
          if (myid.eq.0) write(*, fmt="(I0, A, I0, A)", advance='no') ii, "/", nptk, " "
          do jj=1,nptk
@@ -1792,6 +1804,8 @@ contains
             end do
          end do
       end do
+      !$OMP END DO
+      !$OMP END PARALLEL
       WP4_plusminus=WP4_plusminus/nptk/nptk
     end if
     
@@ -1843,9 +1857,14 @@ contains
     q=IJK(:,list(ll))
     realq=matmul(rlattvec,q/dble(ngrid))
     omega=energy(list(ll),i)
-    if (myid.eq.0) write(*,*) "Driving -- ..."
     if (omega.ne.0) then
-      do ii=1,nptk
+      if (myid.eq.0) write(*,*) "Driving -- ..."
+      !$OMP PARALLEL DEFAULT(SHARED) PRIVATE(ii, jj, ss, qprime, realqprime, qdprime, realqdprime, qtprime, &
+      !$OMP& realqtprime, j, k, l, omegap, omegadp, omegatp, sigma, fBEprime, fBEdprime, fBEtprime, WP4, Vp, &
+      !$OMP& shortest_q, shortest_qprime, shortest_qdprime, shortest_qtprime &
+      !$OMP& )
+      !$OMP DO
+      do ii=1,nptk    
          if (myid.eq.0) write(*, fmt="(I0, A, I0, A)", advance='no') ii, "/", nptk, " "
          do jj=ii,nptk
             do ss=jj,nptk
@@ -1906,6 +1925,8 @@ contains
             end do
          end do
       end do
+      !$OMP END DO
+      !$OMP END PARALLEL
       WP4_minusminus=WP4_minusminus/nptk/nptk
     end if
     
