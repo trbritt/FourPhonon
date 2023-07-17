@@ -551,6 +551,20 @@ program ShengBTE
          end do
       end do
       close(1) !now, root process has the counting arrays for 3ph
+      open(1,file="BTE.P3_plus",status="old")
+      do ll=1,Nlist
+         read(1,*) Pspace_plus_total(:,ll)
+      end do
+      close(1)
+      open(1,file="BTE.P3_minus",status="old")
+      do ll=1,Nlist
+         read(1,*) Pspace_minus_total(:,ll)
+      end do
+      close(1)
+      do ii=1,Nlist
+         Pspace_plus_total(:,ii)=Pspace_plus_total(:,ii)*Nequi(ii)
+         Pspace_minus_total(:,ii)=Pspace_minus_total(:,ii)*Nequi(ii)
+      end do !now, root process has phase spaces in each scat process
       if (four_phonon) then 
          open(1,file="BTE.Numprocess_4ph",status="old")
          do i=1,Nbands
@@ -559,12 +573,36 @@ program ShengBTE
             end do
          end do
          close(1) !now, root process has counting arrays for 4ph
+         open(1,file="BTE.P4_plusplus",status="old")
+         do ll=1,Nlist
+               read(1,*) Pspace_plusplus_total(:,ll)
+         end do
+         close(1)
+         open(1,file="BTE.P4_plusmius",status="old")
+         do ll=1,Nlist
+               read(1,*) Pspace_plusminus_total(:,ll)
+         end do
+         close(1)
+         open(1,file="BTE.P4_minusminus",status="old")
+         do ll=1,Nlist
+               read(1,*) Pspace_minusminus_total(:,ll)
+         end do
+         close(1)
+         do ii=1,Nlist
+            Pspace_plusplus_total(:,ii)=Pspace_plusplus_total(:,ii)*Nequi(ii)
+            Pspace_plusminus_total(:,ii)=Pspace_plusminus_total(:,ii)*Nequi(ii)
+            Pspace_minusminus_total(:,ii)=Pspace_minusminus_total(:,ii)*Nequi(ii)
+         end do
       endif !four phonon
    end if !myid
+   !broadcast and handle the counting arrays ...
    call MPI_BCAST(N_plus, Nlist*Nbands, MPI_INTEGER, 0, MPI_COMM_WORLD, ierr)
    call MPI_BCAST(N_minus, Nlist*Nbands, MPI_INTEGER, 0, MPI_COMM_WORLD, ierr)
    Ntotal_plus=sum(N_plus)
    Ntotal_minus=sum(N_minus)
+   ! ... and now the phase space arrays
+   call MPI_BCAST(Pspace_plus_total, Nlist*Nbands, MPI_DOUBLE_PRECISION, 0, MPI_COMM_WORLD, ierr)
+   call MPI_BCAST(Pspace_minus_total, Nlist*Nbands, MPI_DOUBLE_PRECISION, 0, MPI_COMM_WORLD, ierr)
    if (four_phonon) then 
       call MPI_BCAST(N_plusplus, Nlist*Nbands, MPI_INTEGER8, 0, MPI_COMM_WORLD, ierr)
       call MPI_BCAST(N_plusminus, Nlist*Nbands, MPI_INTEGER8, 0, MPI_COMM_WORLD, ierr)
@@ -572,6 +610,9 @@ program ShengBTE
       Ntotal_plusplus=sum(N_plusplus)
       Ntotal_plusminus=sum(N_plusminus)
       Ntotal_minusminus=sum(N_minusminus)
+      call MPI_BCAST(Pspace_plusplus_total, Nlist*Nbands, MPI_DOUBLE_PRECISION, 0, MPI_COMM_WORLD, ierr)
+      call MPI_BCAST(Pspace_plusminus_total, Nlist*Nbands, MPI_DOUBLE_PRECISION, 0, MPI_COMM_WORLD, ierr)
+      call MPI_BCAST(Pspace_minusminus_total, Nlist*Nbands, MPI_DOUBLE_PRECISION, 0, MPI_COMM_WORLD, ierr)
    endif !four phonon
    if (myid.eq.0) then 
       write(*,*) "Info: Ntotal_plus =",Ntotal_plus
