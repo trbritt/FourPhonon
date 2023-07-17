@@ -585,9 +585,15 @@ program ShengBTE
   call MPI_BARRIER(MPI_COMM_WORLD, ierr)
   write(*,*) "Rank", myid, "sees Ntotal_plus=", Ntotal_plus, "and Ntotal_minus=", Ntotal_minus
   ! confirm that the data written to file is the same as that written by the routines
+   if (myid.eq.5) then 
+      write(*,*) N_plus(Nbands*Nlist - 50 : Nbands*Nlist)
+   endif !print last 50 data points as read from file, on nonroot process
+         !to confirm if scattered correctly also
    call NP_driver(energy,velocity,Nlist,List,IJK,&
       N_plus,Pspace_plus_total,N_minus,Pspace_minus_total)
-  
+   if (myid.eq.5) then 
+      write(*,*) N_plus(Nbands*Nlist - 50 : Nbands*Nlist)
+   endif ! see if they differ 
   if(onlyharmonic) then !we check that counting must be true if onlyharmonic=.true. at config time
       ! weighted phase space (WP3/WP4) is calculated here if onlyharmonic=.true., 
       ! otherwise WP3/WP4 will be calculated later together with BTE.w_anharmonic(BTE.w_3ph/4ph)
