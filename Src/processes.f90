@@ -1617,13 +1617,10 @@ contains
     q=IJK(:,list(ll))
     realq=matmul(rlattvec,q/dble(ngrid))
     omega=energy(list(ll),i)
-
+    if (myid.eq.0) write(*,*) "Driving ++ ..."
     if (omega.ne.0) then
       do ii=1,nptk
-         if (myid.eq.0) then
-            write(*,*) "Driving ++ ..."
-            write(*,fmt="(i3)", advance="no") 100*i/nptk
-         endif
+         if (myid.eq.0) write(*,advance='no') i, "/", nptk
          do jj=ii,nptk
             do ss=1,nptk
                qprime=IJK(:,ii)
@@ -1731,13 +1728,10 @@ contains
     q=IJK(:,list(ll))
     realq=matmul(rlattvec,q/dble(ngrid))
     omega=energy(list(ll),i)
-
+    if (myid.eq.0) write(*,*) "Driving ++ ..."
     if (omega.ne.0) then
       do ii=1,nptk
-         if (myid.eq.0) then
-            write(*,*) "Driving +- ..."
-            write(*,fmt="(i3)", advance="no") 100*i/nptk
-         endif
+         if (myid.eq.0) write(*, advance='no') i, "/", nptk
          do jj=1,nptk
             do ss=jj,nptk
                qprime=IJK(:,ii)
@@ -1849,13 +1843,10 @@ contains
     q=IJK(:,list(ll))
     realq=matmul(rlattvec,q/dble(ngrid))
     omega=energy(list(ll),i)
-
+    if (myid.eq.0) write(*,*) "Driving -- ..."
     if (omega.ne.0) then
       do ii=1,nptk
-         if (myid.eq.0) then
-            write(*,*) "Driving -- ..."
-            write(*,fmt="(i3)", advance="no") 100*i/nptk
-         endif
+         if (myid.eq.0) write(*, advance='no') i, "/", nptk
          do jj=ii,nptk
             do ss=jj,nptk
                qprime=IJK(:,ii)
