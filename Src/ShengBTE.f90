@@ -772,7 +772,8 @@ program ShengBTE
      end if
      if(convergence) then
         if (myid.eq.0) print*, "Info: start calculating iterative 3ph phase space"
-        write(*,*) "Rank", myid, "sees size of Indof2ndPhonon_plus=", size(Indof2ndPhonon_plus), "and shape of N_plus", shape(N_plus)
+        write(*,*) "Rank", myid, "sees size of Indof2ndPhonon_plus=", size(Indof2ndPhonon_plus), &
+                                 "and shape of N_plus", shape(N_plus)
         call Ind_driver(energy,velocity,eigenvect,Nlist,List,IJK,N_plus,N_minus,&
              Ntri,Phi,R_j,R_k,Index_i,Index_j,Index_k,&
              Indof2ndPhonon_plus,Indof3rdPhonon_plus,Gamma_plus,&
