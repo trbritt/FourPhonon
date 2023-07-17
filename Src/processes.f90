@@ -1620,7 +1620,7 @@ contains
     if (myid.eq.0) write(*,*) "Driving ++ ..."
     if (omega.ne.0) then
       do ii=1,nptk
-         if (myid.eq.0) write(*, fmt="(I0, A, I0, A)", advance='no') i, "/", nptk, " "
+         if (myid.eq.0) write(*, fmt="(I0, A, I0, A)", advance='no') ii, "/", nptk, " "
          do jj=ii,nptk
             do ss=1,nptk
                qprime=IJK(:,ii)
@@ -1731,7 +1731,7 @@ contains
     if (myid.eq.0) write(*,*) "Driving ++ ..."
     if (omega.ne.0) then
       do ii=1,nptk
-         if (myid.eq.0) write(*, fmt="(I0, A, I0, A)", advance='no') i, "/", nptk, " "
+         if (myid.eq.0) write(*, fmt="(I0, A, I0, A)", advance='no') ii, "/", nptk, " "
          do jj=1,nptk
             do ss=jj,nptk
                qprime=IJK(:,ii)
@@ -1846,7 +1846,7 @@ contains
     if (myid.eq.0) write(*,*) "Driving -- ..."
     if (omega.ne.0) then
       do ii=1,nptk
-         if (myid.eq.0) write(*, fmt="(I0, A, I0, A)", advance='no') i, "/", nptk, " "
+         if (myid.eq.0) write(*, fmt="(I0, A, I0, A)", advance='no') ii, "/", nptk, " "
          do jj=ii,nptk
             do ss=jj,nptk
                qprime=IJK(:,ii)
