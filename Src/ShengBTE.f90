@@ -550,13 +550,7 @@ program ShengBTE
             read(1,*) N_plus(ll+Nlist*(i-1)),N_minus(ll+Nlist*(i-1))
          end do
       end do
-      close(1)
-      call MPI_BCAST(N_plus, Nbands*Nlist, MPI_INTEGER, 0, MPI_COMM_WORLD, ierr)
-      call MPI_BCAST(N_minus, Nbands*Nlist, MPI_INTEGER, 0, MPI_COMM_WORLD, ierr)
-      Ntotal_plus=sum(N_plus)
-      Ntotal_minus=sum(N_minus)
-      write(*,*) "Info: Ntotal_plus =",Ntotal_plus
-      write(*,*) "Info: Ntotal_minus =",Ntotal_minus
+      close(1) !now, root process has the counting arrays for 3ph
       if (four_phonon) then 
          open(1,file="BTE.Numprocess_4ph",status="old")
          do i=1,Nbands
@@ -564,17 +558,29 @@ program ShengBTE
                read(1,*) N_plusplus(ll+Nlist*(i-1)),N_plusminus(ll+Nlist*(i-1)),N_minusminus(ll+Nlist*(i-1))
             end do
          end do
-         close(1)
-         Ntotal_plusplus=sum(N_plusplus)
-         Ntotal_plusminus=sum(N_plusminus)
-         Ntotal_minusminus=sum(N_minusminus)
-         write(*,*) "Info: Ntotal_plusplus,Ntotal_plusminus,Ntotal_minusminus="
-         write(*,"(1X,I0,1X,I0,1X,I0)") Ntotal_plusplus,Ntotal_plusminus,Ntotal_minusminus
-         call MPI_BCAST(Ntotal_plusplus, 1, MPI_INTEGER8, 0, MPI_COMM_WORLD, ierr)
-         call MPI_BCAST(Ntotal_plusminus, 1, MPI_INTEGER8, 0, MPI_COMM_WORLD, ierr)
-         call MPI_BCAST(Ntotal_minusminus, 1, MPI_INTEGER8, 0, MPI_COMM_WORLD, ierr)
+         close(1) !now, root process has counting arrays for 4ph
       endif !four phonon
    end if !myid
+   call MPI_BCAST(N_plus, Nbands*Nlist, MPI_INTEGER, 0, MPI_COMM_WORLD, ierr)
+   call MPI_BCAST(N_minus, Nbands*Nlist, MPI_INTEGER, 0, MPI_COMM_WORLD, ierr)
+   Ntotal_plus=sum(N_plus)
+   Ntotal_minus=sum(N_minus)
+   if (four_phonon) then 
+      call MPI_BCAST(N_plusplus, Nbands*Nlist, MPI_INTEGER8, 0, MPI_COMM_WORLD, ierr)
+      call MPI_BCAST(N_plusminus, Nbands*Nlist, MPI_INTEGER8, 0, MPI_COMM_WORLD, ierr)
+      call MPI_BCAST(N_minusminus, Nbands*Nlist, MPI_INTEGER8, 0, MPI_COMM_WORLD, ierr)
+      Ntotal_plusplus=sum(N_plusplus)
+      Ntotal_plusminus=sum(N_plusminus)
+      Ntotal_minusminus=sum(N_minusminus)
+   endif !four phonon
+   if (myid.eq.0) then 
+      write(*,*) "Info: Ntotal_plus =",Ntotal_plus
+      write(*,*) "Info: Ntotal_minus =",Ntotal_minus
+      if (four_phonon) then 
+         write(*,*) "Info: Ntotal_plusplus,Ntotal_plusminus,Ntotal_minusminus="
+         write(*,"(1X,I0,1X,I0,1X,I0)") Ntotal_plusplus,Ntotal_plusminus,Ntotal_minusminus
+      endif
+   endif
   endif !counting
   call MPI_BARRIER(MPI_COMM_WORLD, ierr)
   write(*,*) "Rank", myid, "sees Ntotal_plus=", Ntotal_plus, "and Ntotal_minus=", Ntotal_minus
