@@ -561,14 +561,14 @@ program ShengBTE
          close(1) !now, root process has counting arrays for 4ph
       endif !four phonon
    end if !myid
-   call MPI_BCAST(N_plus, Nbands*Nlist, MPI_INTEGER, 0, MPI_COMM_WORLD, ierr)
-   call MPI_BCAST(N_minus, Nbands*Nlist, MPI_INTEGER, 0, MPI_COMM_WORLD, ierr)
+   call MPI_BCAST(N_plus, Nlist*Nbands, MPI_INTEGER, 0, MPI_COMM_WORLD, ierr)
+   call MPI_BCAST(N_minus, Nlist*Nbands, MPI_INTEGER, 0, MPI_COMM_WORLD, ierr)
    Ntotal_plus=sum(N_plus)
    Ntotal_minus=sum(N_minus)
    if (four_phonon) then 
-      call MPI_BCAST(N_plusplus, Nbands*Nlist, MPI_INTEGER8, 0, MPI_COMM_WORLD, ierr)
-      call MPI_BCAST(N_plusminus, Nbands*Nlist, MPI_INTEGER8, 0, MPI_COMM_WORLD, ierr)
-      call MPI_BCAST(N_minusminus, Nbands*Nlist, MPI_INTEGER8, 0, MPI_COMM_WORLD, ierr)
+      call MPI_BCAST(N_plusplus, Nlist*Nbands, MPI_INTEGER8, 0, MPI_COMM_WORLD, ierr)
+      call MPI_BCAST(N_plusminus, Nlist*Nbands, MPI_INTEGER8, 0, MPI_COMM_WORLD, ierr)
+      call MPI_BCAST(N_minusminus, Nlist*Nbands, MPI_INTEGER8, 0, MPI_COMM_WORLD, ierr)
       Ntotal_plusplus=sum(N_plusplus)
       Ntotal_plusminus=sum(N_plusminus)
       Ntotal_minusminus=sum(N_minusminus)
@@ -583,7 +583,7 @@ program ShengBTE
    endif
   endif !counting
   call MPI_BARRIER(MPI_COMM_WORLD, ierr)
-  write(*,*) "Rank", myid, "sees Ntotal_plus=", Ntotal_plus, "and Ntotal_minus=", Ntotal_minus
+  write(*,*) "Rank", myid, "sees Ntotal_plus=", Ntotal_plus, "and Ntotal_minus=", Ntotal_minus, "and shape", shape(N_plus)
   if(onlyharmonic) then !we check that counting must be true if onlyharmonic=.true. at config time
       ! weighted phase space (WP3/WP4) is calculated here if onlyharmonic=.true., 
       ! otherwise WP3/WP4 will be calculated later together with BTE.w_anharmonic(BTE.w_3ph/4ph)
