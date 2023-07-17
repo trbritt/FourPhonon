@@ -583,7 +583,7 @@ program ShengBTE
    endif
   endif !counting
   call MPI_BARRIER(MPI_COMM_WORLD, ierr)
-  write(*,*) "Rank", myid, "sees Ntotal_plus=", Ntotal_plus, "and Ntotal_minus=", Ntotal_minus, "and shape", shape(N_plus)
+  write(*,*) "Rank", myid, "sees Ntotal_plus=", Ntotal_plus, "and Ntotal_minus=", Ntotal_minus
   if(onlyharmonic) then !we check that counting must be true if onlyharmonic=.true. at config time
       ! weighted phase space (WP3/WP4) is calculated here if onlyharmonic=.true., 
       ! otherwise WP3/WP4 will be calculated later together with BTE.w_anharmonic(BTE.w_3ph/4ph)
@@ -772,6 +772,7 @@ program ShengBTE
      end if
      if(convergence) then
         if (myid.eq.0) print*, "Info: start calculating iterative 3ph phase space"
+        write(*,*) "Rank", myid, "sees size of Indof2ndPhonon_plus=", size(Indof2ndPhonon_plus), "and shape of N_plus", shape(N_plus)
         call Ind_driver(energy,velocity,eigenvect,Nlist,List,IJK,N_plus,N_minus,&
              Ntri,Phi,R_j,R_k,Index_i,Index_j,Index_k,&
              Indof2ndPhonon_plus,Indof3rdPhonon_plus,Gamma_plus,&
