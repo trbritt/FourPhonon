@@ -583,7 +583,7 @@ program ShengBTE
    endif
   endif !counting
   call MPI_BARRIER(MPI_COMM_WORLD, ierr)
-
+  write(*,*) "Rank", myid, "sees Ntotal_plus=", Ntotal_plus, "and Ntotal_minus=", Ntotal_minus
   if(onlyharmonic) then !we check that counting must be true if onlyharmonic=.true. at config time
       ! weighted phase space (WP3/WP4) is calculated here if onlyharmonic=.true., 
       ! otherwise WP3/WP4 will be calculated later together with BTE.w_anharmonic(BTE.w_3ph/4ph)
