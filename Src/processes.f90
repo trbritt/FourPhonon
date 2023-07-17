@@ -1620,6 +1620,10 @@ contains
 
     if (omega.ne.0) then
       do ii=1,nptk
+         if (myid.eq.0) then
+            write(*,*) "Driving ++ ..."
+            write(*,fmt="(i3)", advance="no") 100*i/nptk
+         endif
          do jj=ii,nptk
             do ss=1,nptk
                qprime=IJK(:,ii)
@@ -1730,6 +1734,10 @@ contains
 
     if (omega.ne.0) then
       do ii=1,nptk
+         if (myid.eq.0) then
+            write(*,*) "Driving +- ..."
+            write(*,fmt="(i3)", advance="no") 100*i/nptk
+         endif
          do jj=1,nptk
             do ss=jj,nptk
                qprime=IJK(:,ii)
@@ -1844,6 +1852,10 @@ contains
 
     if (omega.ne.0) then
       do ii=1,nptk
+         if (myid.eq.0) then
+            write(*,*) "Driving -- ..."
+            write(*,fmt="(i3)", advance="no") 100*i/nptk
+         endif
          do jj=ii,nptk
             do ss=jj,nptk
                qprime=IJK(:,ii)
@@ -2047,7 +2059,7 @@ contains
       write(unit=bar(1:3),fmt="(i3)") 100*j/maximum
       n = FLOOR(50*real(j)/real(maximum))
       do k=1, n
-         bar(6+k:6+k)="*"
+         bar(6+k:6+k)="#"
       enddo
       ! print the progress bar.
       write(unit=6,fmt="(a1,a1,a57)") '+',char(13), bar
