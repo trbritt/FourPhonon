@@ -726,7 +726,6 @@ contains
        i=modulo(mm-1,Nbands)+1
        ll=int((mm-1)/Nbands)+1
        if(N_plus(mm).ne.0) then
-          write(*,*) "Rank", myid, "sees N_plus(mm)=", N_plus(mm), "at mm=", mm
           call Ind_plus(mm,N_plus(mm),energy,velocity,eigenvect,Nlist,List,&
                Ntri,Phi,R_j,R_k,Index_i,Index_j,Index_k,IJK,&
                Indof2ndPhonon(1:N_plus(mm)),Indof3rdPhonon(1:N_plus(mm)),&
