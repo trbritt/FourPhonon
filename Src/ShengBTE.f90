@@ -598,11 +598,13 @@ program ShengBTE
             path="T"//trim(adjustl(aux2))//"K"
             call change_directory(trim(adjustl(path))//C_NULL_CHAR)
          end if
+         if (myid.eq.0) print*, "Info: start calculating RTA 3ph phase space"
          call RTA_driver(energy,velocity,eigenvect,Nlist,List,IJK,&
                Ntri,Phi,R_j,R_k,Index_i,Index_j,Index_k,rate_scatt,&
                rate_scatt_plus,rate_scatt_minus,Pspace_plus_total,Pspace_minus_total,&
                rate_scatt_plus_N,rate_scatt_minus_N,rate_scatt_plus_U,rate_scatt_minus_U)
          if (four_phonon) then ! four-phonon function
+            if (myid.eq.0) print*, "Info: start calculating RTA 4ph phase space"
             call RTA_driver_4ph(energy,velocity,eigenvect,Nlist,List,IJK,&
                   Ntri_4fc,Psi,R_s,R_t,R_u,Index_r,Index_s,Index_t,Index_u,rate_scatt_4ph,&
                   rate_scatt_plusplus,rate_scatt_plusminus,rate_scatt_minusminus,&
