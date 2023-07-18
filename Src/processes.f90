@@ -722,7 +722,7 @@ contains
     WP3_minus_reduce=0.d0
 
     do mm=myid+1,Nbands*NList,numprocs
-       if (myid.eq.0) call progress_bar(mm,Nbands*Nlist)
+       if ((myid.eq.0) .and. INT(100*(mm-numprocs)/(Nbands*Nlist))/=INT(100*mm/(Nbands*Nlist))) call progress_bar(mm,Nbands*Nlist)
        i=modulo(mm-1,Nbands)+1
        ll=int((mm-1)/Nbands)+1
        if(N_plus(mm).ne.0) then
@@ -1271,7 +1271,7 @@ contains
 
 
     do mm=myid+1,Nbands*NList,numprocs
-       if (myid.eq.0) call progress_bar(mm,Nbands*Nlist)
+       if ((myid.eq.0) .and. INT(100*(mm-numprocs)/(Nbands*Nlist))/=INT(100*mm/(Nbands*Nlist))) call progress_bar(mm,Nbands*Nlist)
        i=modulo(mm-1,Nbands)+1
        ll=int((mm-1)/Nbands)+1
        if (energy(List(ll),i).le.omega_max) then
@@ -1553,7 +1553,7 @@ contains
     N_minusminus_reduce=0
 
     do mm=myid+1,Nbands*Nlist,numprocs
-      if (myid.eq.0) call progress_bar(mm,Nbands*Nlist)
+      if ((myid.eq.0) .and. INT(100*(mm-numprocs)/(Nbands*Nlist))/=INT(100*mm/(Nbands*Nlist))) call progress_bar(mm,Nbands*Nlist)
       if (energy(List(int((mm-1)/Nbands)+1),modulo(mm-1,Nbands)+1).le.omega_max) then
          call NP_plusplus(mm,energy,velocity,Nlist,List,IJK,N_plusplus_reduce(mm),Pspace_plusplus_reduce(mm))
          call NP_plusminus(mm,energy,velocity,Nlist,List,IJK,N_plusminus_reduce(mm),Pspace_plusminus_reduce(mm))
@@ -2008,7 +2008,7 @@ contains
     WP4_minusminus_reduce=0.d00
 
     do mm=myid+1,Nbands*NList,numprocs
-       if (myid.eq.0) call progress_bar(mm,Nbands*Nlist)
+       if ((myid.eq.0) .and. INT(100*(mm-numprocs)/(Nbands*Nlist))/=INT(100*mm/(Nbands*Nlist))) call progress_bar(mm,Nbands*Nlist)
        i=modulo(mm-1,Nbands)+1
        ll=int((mm-1)/Nbands)+1
        if (energy(List(ll),i).le.omega_max) then
