@@ -1343,6 +1343,8 @@ contains
     q=IJK(:,list(ll))
     omega=energy(list(ll),i)
     if (omega.ne.0) then
+      !$OMP PARALLEL DO DEFAULT(SHARED) PRIVATE(ii, jj, ss, qprime, qdprime, qtprime, j, k, l, &
+      !$OMP& omegap, omegadp, omegatp, sigma) REDUCTION(+: N_plusplus, P_plusplus)
       do ii=1,nptk
          do jj=ii,nptk
             do ss=1,nptk
@@ -1376,6 +1378,7 @@ contains
             end do
          end do
       end do
+      !$OMP END PARALLEL DO
     end if
   end subroutine
 
@@ -1407,6 +1410,8 @@ contains
       q=IJK(:,list(ll))
       omega=energy(list(ll),i)
       if (omega.ne.0) then
+         !$OMP PARALLEL DO DEFAULT(SHARED) PRIVATE(ii, jj, ss, qprime, qdprime, qtprime, j, k, l, &
+         !$OMP& omegap, omegadp, omegatp, sigma) REDUCTION(+: N_plusminus, P_plusminus)
          do ii=1,nptk
             do jj=1,nptk
                do ss=jj,nptk
@@ -1443,6 +1448,7 @@ contains
                end do
             end do
          end do
+         !$OMP END PARALLEL DO
        end if
   end subroutine
 
@@ -1474,6 +1480,8 @@ contains
       q=IJK(:,list(ll))
       omega=energy(list(ll),i)
       if (omega.ne.0) then
+         !$OMP PARALLEL DO DEFAULT(SHARED) PRIVATE(ii, jj, ss, qprime, qdprime, qtprime, j, k, l, &
+         !$OMP& omegap, omegadp, omegatp, sigma) REDUCTION(+: N_minusminus, P_minusminus)
          do ii=1,nptk
             do jj=ii,nptk
                do ss=jj,nptk
@@ -1509,6 +1517,7 @@ contains
                end do
             end do
          end do
+         !$OMP END PARALLEL DO
        end if
   end subroutine
 
@@ -1619,12 +1628,10 @@ contains
     omega=energy(list(ll),i)
     if (omega.ne.0) then
       if (myid.eq.0) write(*,*) "Driving ++ ..."
-      !$OMP PARALLEL DEFAULT(SHARED) PRIVATE(ii, jj, ss, qprime, realqprime, qdprime, realqdprime, qtprime, &
+      !$OMP PARALLEL DO DEFAULT(SHARED) PRIVATE(ii, jj, ss, qprime, realqprime, qdprime, realqdprime, qtprime, &
       !$OMP& realqtprime, j, k, l, omegap, omegadp, omegatp, sigma, fBEprime, fBEdprime, fBEtprime, WP4, Vp, &
       !$OMP& shortest_q, shortest_qprime, shortest_qdprime, shortest_qtprime &
-      !$OMP& ) 
-      !$OMP REDUCTION(+:Gamma_plusplus,WP4_plusplus,Gamma_plusplus_N,Gamma_plusplus_U)
-      !$OMP DO
+      !$OMP& ) REDUCTION(+:Gamma_plusplus,WP4_plusplus,Gamma_plusplus_N,Gamma_plusplus_U)
       do ii=1,nptk
          if (myid.eq.0) write(*, fmt="(I0, A, I0, A)", advance='no') ii, "/", nptk, " "
          do jj=ii,nptk
@@ -1684,8 +1691,7 @@ contains
             end do
          end do
       end do
-      !$OMP END DO
-      !$OMP END PARALLEL
+      !$OMP END PARALLEL DO
       WP4_plusplus=WP4_plusplus/nptk/nptk
     end if
     ! converting to THz
@@ -1738,12 +1744,10 @@ contains
     omega=energy(list(ll),i)
     if (omega.ne.0) then    
       if (myid.eq.0) write(*,*) "Driving +- ..."
-      !$OMP PARALLEL DEFAULT(SHARED) PRIVATE(ii, jj, ss, qprime, realqprime, qdprime, realqdprime, qtprime, &
+      !$OMP PARALLEL DO DEFAULT(SHARED) PRIVATE(ii, jj, ss, qprime, realqprime, qdprime, realqdprime, qtprime, &
       !$OMP& realqtprime, j, k, l, omegap, omegadp, omegatp, sigma, fBEprime, fBEdprime, fBEtprime, WP4, Vp, &
       !$OMP& shortest_q, shortest_qprime, shortest_qdprime, shortest_qtprime &
-      !$OMP& )
-      !$OMP REDUCTION(+:Gamma_plusminus,WP4_plusminus, Gamma_plusminus_N,Gamma_plusminus_U)
-      !$OMP DO
+      !$OMP& ) REDUCTION(+:Gamma_plusminus,WP4_plusminus, Gamma_plusminus_N,Gamma_plusminus_U)
       do ii=1,nptk
          if (myid.eq.0) write(*, fmt="(I0, A, I0, A)", advance='no') ii, "/", nptk, " "
          do jj=1,nptk
@@ -1806,8 +1810,7 @@ contains
             end do
          end do
       end do
-      !$OMP END DO
-      !$OMP END PARALLEL
+      !$OMP END PARALLEL DO
       WP4_plusminus=WP4_plusminus/nptk/nptk
     end if
     
@@ -1861,12 +1864,10 @@ contains
     omega=energy(list(ll),i)
     if (omega.ne.0) then
       if (myid.eq.0) write(*,*) "Driving -- ..."
-      !$OMP PARALLEL DEFAULT(SHARED) PRIVATE(ii, jj, ss, qprime, realqprime, qdprime, realqdprime, qtprime, &
+      !$OMP PARALLEL DO DEFAULT(SHARED) PRIVATE(ii, jj, ss, qprime, realqprime, qdprime, realqdprime, qtprime, &
       !$OMP& realqtprime, j, k, l, omegap, omegadp, omegatp, sigma, fBEprime, fBEdprime, fBEtprime, WP4, Vp, &
       !$OMP& shortest_q, shortest_qprime, shortest_qdprime, shortest_qtprime &
-      !$OMP& )
-      !$OMP REDUCTION(+:Gamma_minusminus,WP4_minusminus, Gamma_minusminus_N,Gamma_minusminus_U)
-      !$OMP DO
+      !$OMP& ) REDUCTION(+:Gamma_minusminus,WP4_minusminus, Gamma_minusminus_N,Gamma_minusminus_U)
       do ii=1,nptk    
          if (myid.eq.0) write(*, fmt="(I0, A, I0, A)", advance='no') ii, "/", nptk, " "
          do jj=ii,nptk
@@ -1928,8 +1929,7 @@ contains
             end do
          end do
       end do
-      !$OMP END DO
-      !$OMP END PARALLEL
+      !$OMP END PARALLEL DO
       WP4_minusminus=WP4_minusminus/nptk/nptk
     end if
     
