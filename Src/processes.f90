@@ -1622,7 +1622,8 @@ contains
       !$OMP PARALLEL DEFAULT(SHARED) PRIVATE(ii, jj, ss, qprime, realqprime, qdprime, realqdprime, qtprime, &
       !$OMP& realqtprime, j, k, l, omegap, omegadp, omegatp, sigma, fBEprime, fBEdprime, fBEtprime, WP4, Vp, &
       !$OMP& shortest_q, shortest_qprime, shortest_qdprime, shortest_qtprime &
-      !$OMP& )
+      !$OMP& ) 
+      !$OMP REDUCTION(+:Gamma_plusplus,WP4_plusplus,Gamma_plusplus_N,Gamma_plusplus_U)
       !$OMP DO
       do ii=1,nptk
          if (myid.eq.0) write(*, fmt="(I0, A, I0, A)", advance='no') ii, "/", nptk, " "
@@ -1741,6 +1742,7 @@ contains
       !$OMP& realqtprime, j, k, l, omegap, omegadp, omegatp, sigma, fBEprime, fBEdprime, fBEtprime, WP4, Vp, &
       !$OMP& shortest_q, shortest_qprime, shortest_qdprime, shortest_qtprime &
       !$OMP& )
+      !$OMP REDUCTION(+:Gamma_plusminus,WP4_plusminus, Gamma_plusminus_N,Gamma_plusminus_U)
       !$OMP DO
       do ii=1,nptk
          if (myid.eq.0) write(*, fmt="(I0, A, I0, A)", advance='no') ii, "/", nptk, " "
@@ -1863,6 +1865,7 @@ contains
       !$OMP& realqtprime, j, k, l, omegap, omegadp, omegatp, sigma, fBEprime, fBEdprime, fBEtprime, WP4, Vp, &
       !$OMP& shortest_q, shortest_qprime, shortest_qdprime, shortest_qtprime &
       !$OMP& )
+      !$OMP REDUCTION(+:Gamma_minusminus,WP4_minusminus, Gamma_minusminus_N,Gamma_minusminus_U)
       !$OMP DO
       do ii=1,nptk    
          if (myid.eq.0) write(*, fmt="(I0, A, I0, A)", advance='no') ii, "/", nptk, " "
