@@ -1633,7 +1633,7 @@ contains
       !$OMP& shortest_q, shortest_qprime, shortest_qdprime, shortest_qtprime &
       !$OMP& ) REDUCTION(+:Gamma_plusplus,WP4_plusplus,Gamma_plusplus_N,Gamma_plusplus_U)
       do ii=1,nptk
-         ! if (myid.eq.0) write(*, fmt="(I0, A, I0, A)", advance='no') ii, "/", nptk, " "
+         if (myid.eq.0) write(*, fmt="(I0, A, I0, A)") ii, "/", nptk, " "
          do jj=ii,nptk
             do ss=1,nptk
                qprime=IJK(:,ii)
@@ -1749,7 +1749,7 @@ contains
       !$OMP& shortest_q, shortest_qprime, shortest_qdprime, shortest_qtprime &
       !$OMP& ) REDUCTION(+:Gamma_plusminus,WP4_plusminus, Gamma_plusminus_N,Gamma_plusminus_U)
       do ii=1,nptk
-         ! if (myid.eq.0) write(*, fmt="(I0, A, I0, A)", advance='no') ii, "/", nptk, " "
+         if (myid.eq.0) write(*, fmt="(I0, A, I0, A)") ii, "/", nptk, " "
          do jj=1,nptk
             do ss=jj,nptk
                qprime=IJK(:,ii)
@@ -1869,7 +1869,7 @@ contains
       !$OMP& shortest_q, shortest_qprime, shortest_qdprime, shortest_qtprime &
       !$OMP& ) REDUCTION(+:Gamma_minusminus,WP4_minusminus, Gamma_minusminus_N,Gamma_minusminus_U)
       do ii=1,nptk    
-         ! if (myid.eq.0) write(*, fmt="(I0, A, I0, A)", advance='no') ii, "/", nptk, " "
+         if (myid.eq.0) write(*, fmt="(I0, A, I0, A)") ii, "/", nptk, " "
          do jj=ii,nptk
             do ss=jj,nptk
                qprime=IJK(:,ii)
