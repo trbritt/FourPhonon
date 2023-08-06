@@ -100,7 +100,7 @@ program ShengBTE
   real(kind=8),allocatable :: ffunc(:,:),radnw_range(:),v_or(:,:),F_or(:,:)
   real(kind=8),allocatable :: kappa_or(:),kappa_wires(:,:),kappa_wires_reduce(:,:)
 
-  integer(kind=4) :: iorient,ierr,REQUIRED,PROVIDED
+  integer(kind=4) :: iorient,ierr,REQUIRED,PROVIDED, i, j, k, l
   character(len=4) :: aux,aux2
   character(len=1024) :: path
   character(len=128) :: sorientation
@@ -1133,7 +1133,7 @@ program ShengBTE
         do i = 1, nbands
             do j = 1, nbands
                 do k = 1, 3
-                    do l = 1, 3
+                    do ll = 1, 3
                         write(2004, "(E20.10)"), ThConductivityCoh(i, j, k, l)
                     end do
                 end do
