@@ -1129,8 +1129,16 @@ program ShengBTE
         write(2003,"(I9,E20.10,E20.10)") 0,&
              sum(sum(ThConductivity,dim=1),reshape((/((i==j,i=1,3),j=1,3)/),(/3,3/)))/3.
         !write(2004,"(I9,"//trim(adjustl(aux))//"E20.10)") 0,ThConductivityCoh
-        write(2004,"(I9,"//trim(adjustl(aux))//"E20.10)") 0, ( ( (&
-             ThConductivityCoh(i,j,k,l), l=1,3), k=1,3), j=1,nbands), i=1,nbands
+        write(2004, "(I9)"), 0
+        do i = 1, nbands
+            do j = 1, nbands
+                do k = 1, 3
+                    do l = 1, 3
+                        write(2004, "(E20.10)"), ThConductivityCoh(i, j, k, l)
+                    end do
+                end do
+            end do
+        end do
 
         write(2005,"(I9,9E20.10,E20.10)") 0,sum(sum(ThConductivityCoh,dim=1),dim=1)
         write(2006,"(I9,E20.10,E20.10)") 0,&
