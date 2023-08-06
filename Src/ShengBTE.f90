@@ -1134,7 +1134,7 @@ program ShengBTE
             do jj = 1, nbands
                 do kk = 1, 3
                     do ll = 1, 3
-                        write(2004, "(E20.10)"), ThConductivityCoh(ii, kj, kk, ll)
+                        write(2004, "(E20.10)"), ThConductivityCoh(ii, jj, kk, ll)
                     end do
                 end do
             end do
